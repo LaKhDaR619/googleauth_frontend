@@ -1,0 +1,17 @@
+.login-form-container {
+  width: 50%;
+  margin: auto;
+  padding-top: 3rem;
+}
+
+.login-form-button {
+  margin-right: 1rem;
+}
+
+@media all and (max-width: 800px) {
+  .login-form-container {
+    width: 80%;
+    margin: auto;
+    padding-top: 3rem;
+  }
+}

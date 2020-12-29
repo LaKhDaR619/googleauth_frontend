@@ -1,25 +1,76 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+
+import { useReducer, createContext, useEffect } from "react";
+
+import {
+  IAuthContext,
+  authReducer,
+  initialState as reducerInitialState,
+} from "./state/authReducer";
+
+import { BrowserRouter as Router } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+
+import Main from "./components/Main";
+import Login from "./components/Login";
+import Register from "./components/Register/Register";
+import { fethWithToken } from "./shared/helpers";
+
+export const authContext = createContext<IAuthContext>({} as IAuthContext);
 
 function App() {
+  const [auth, authDispatch] = useReducer(authReducer, reducerInitialState);
+
+  const checkAuth = async () => {
+    try {
+      const res = await fethWithToken("/auth/check", { method: "GET" });
+      if (res.status === 200) authDispatch({ type: "login" });
+      else authDispatch({ type: "logout" });
+    } catch (err) {
+      authDispatch({ type: "logout" });
+      console.error(err.message);
+    }
+  };
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
+  if (auth.isLoading) return <h1>Loading...</h1>;
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <authContext.Provider value={{ auth, authDispatch }}>
+      <Router>
+        <ProtectedRoute
+          path="/"
+          exact
+          Component={Main}
+          condition={false}
+          redirectTo="/login"
+        />
+        <ProtectedRoute
+          path="/login"
+          Component={Login}
+          condition={!auth.loggedIn}
+          redirectTo="/main"
+          exact
+        />
+        <ProtectedRoute
+          path="/register"
+          Component={Register}
+          condition={!auth.loggedIn}
+          redirectTo="/main"
+          exact
+        />
+        <ProtectedRoute
+          path="/main"
+          Component={Main}
+          condition={auth.loggedIn}
+          redirectTo="/login"
+          exact
+        />
+      </Router>
+    </authContext.Provider>
   );
 }
 
