@@ -15,6 +15,8 @@ import Main from "./components/Main";
 import Login from "./components/Login";
 import Register from "./components/Register/Register";
 import { fethWithToken } from "./shared/helpers";
+import GoogleCallback from "./components/GoogleCallback";
+import Header from "./components/Header";
 
 export const authContext = createContext<IAuthContext>({} as IAuthContext);
 
@@ -40,6 +42,7 @@ function App() {
 
   return (
     <authContext.Provider value={{ auth, authDispatch }}>
+      <Header />
       <Router>
         <ProtectedRoute
           path="/"
@@ -58,6 +61,13 @@ function App() {
         <ProtectedRoute
           path="/register"
           Component={Register}
+          condition={!auth.loggedIn}
+          redirectTo="/main"
+          exact
+        />
+        <ProtectedRoute
+          path="/google/callback"
+          Component={GoogleCallback}
           condition={!auth.loggedIn}
           redirectTo="/main"
           exact

@@ -5,8 +5,6 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { handleRegister } from "./handlers";
 import { useForm } from "antd/lib/form/Form";
 import { Link, useHistory } from "react-router-dom";
-import { useContext } from "react";
-import { authContext } from "../../App";
 
 interface FormValues {
   email: string;
@@ -14,7 +12,6 @@ interface FormValues {
 }
 
 function Register() {
-  const auth = useContext(authContext);
   const history = useHistory();
 
   const onFinish = async (values: FormValues) => {

@@ -15,10 +15,7 @@ export const handleLogin = async (
       body: JSON.stringify({ username, password }),
     });
 
-    console.log(res);
-
     const result = await res.json();
-    console.log(result);
 
     const { field, message } = result;
 

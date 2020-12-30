@@ -15,6 +15,7 @@ interface FormValues {
 
 function Login() {
   const { auth, authDispatch } = useContext(authContext);
+  const [form] = useForm();
 
   const onFinish = async (values: FormValues) => {
     const { username, password } = values;
@@ -40,7 +41,22 @@ function Login() {
     authDispatch({ type: "login" });
   };
 
-  const [form] = useForm();
+  const handleGoogle = async () => {
+    console.log("google");
+
+    const res = await fetch("/auth/google");
+
+    if (res.status === 200) {
+      try {
+        const result = await res.json();
+
+        window.location.href = result.url;
+      } catch ({ message }) {
+        console.error(message);
+      }
+    }
+    console.log(res);
+  };
 
   return (
     <div className="login-form-container">
@@ -73,6 +89,7 @@ function Login() {
         </Form.Item>
         {auth.error && <Alert message={auth.error} type="error" />}
       </Form>
+      <button onClick={handleGoogle}>Google</button>
     </div>
   );
 }
